@@ -4,11 +4,18 @@ import time
 import curses
 import asyncio
 
+SPACE_KEY_CODE = 32
+LEFT_KEY_CODE = 260
+RIGHT_KEY_CODE = 261
+UP_KEY_CODE = 259
+DOWN_KEY_CODE = 258
+
 
 def draw(canvas):
-    max_x, max_y = canvas.getmaxyx()
     canvas.nodelay(True)
     curses.curs_set(False)
+
+    max_x, max_y = canvas.getmaxyx()
     x_mid = max_x // 2
     y_mid = max_y // 2
     coroutines = [fire(canvas, x_mid, y_mid),
@@ -29,10 +36,45 @@ def draw(canvas):
         time.sleep(0.1)
 
 
+def read_controls(canvas):
+    """Read keys pressed and returns tuple witl controls state."""
+
+    rows_direction = columns_direction = 0
+    space_pressed = False
+
+    while True:
+        pressed_key_code = canvas.getch()
+
+        if pressed_key_code == -1:
+            # https://docs.python.org/3/library/curses.html#curses.window.getch
+            break
+
+        if pressed_key_code == UP_KEY_CODE:
+            rows_direction = -1
+
+        if pressed_key_code == DOWN_KEY_CODE:
+            rows_direction = 1
+
+        if pressed_key_code == RIGHT_KEY_CODE:
+            columns_direction = 1
+
+        if pressed_key_code == LEFT_KEY_CODE:
+            columns_direction = -1
+
+        if pressed_key_code == SPACE_KEY_CODE:
+            space_pressed = True
+
+    return rows_direction, columns_direction, space_pressed
+
+
 async def animate_spaceship(canvas, column, row):
     rocket_1 = read_file('rocket_frame_1.txt')
     rocket_2 = read_file('rocket_frame_2.txt')
     while True:
+        rows_direction, columns_direction, space_pressed = read_controls(canvas)  # Call to read_controls
+        row += rows_direction
+        column += columns_direction
+
         draw_frame(canvas, row, column, rocket_1)
         canvas.refresh()
         await asyncio.sleep(0)
