@@ -67,13 +67,27 @@ def read_controls(canvas):
     return rows_direction, columns_direction, space_pressed
 
 
+def get_frame_size(text):
+    """Calculate size of multiline text fragment, return pair — number of rows and colums."""
+
+    lines = text.splitlines()
+    rows = len(lines)
+    columns = max([len(line) for line in lines])
+    return rows, columns
+
+
 async def animate_spaceship(canvas, column, row):
     rocket_1 = read_file('rocket_frame_1.txt')
     rocket_2 = read_file('rocket_frame_2.txt')
+    max_x, max_y = canvas.getmaxyx()
+    size_rows, size_columns = get_frame_size(rocket_1)
     while True:
-        rows_direction, columns_direction, space_pressed = read_controls(canvas)  # Call to read_controls
-        row += rows_direction
-        column += columns_direction
+        rows_direction, columns_direction, _ = read_controls(canvas)
+
+        if row + rows_direction > 0 and row + rows_direction + size_rows < max_x:
+            row += rows_direction
+        if column + columns_direction > 0 and column + columns_direction + size_columns < max_y:
+            column += columns_direction
 
         draw_frame(canvas, row, column, rocket_1)
         canvas.refresh()
@@ -172,6 +186,7 @@ async def blink(canvas, row, column, symbol='*'):
         canvas.addstr(row, column, symbol)
         for _ in range(3):
             await asyncio.sleep(0)
+
 
 if __name__ == '__main__':
     curses.update_lines_cols()
