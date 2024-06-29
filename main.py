@@ -25,7 +25,8 @@ def draw(canvas):
         symbol = random.choice('+*.:')
         x = random.randint(0, max_x - 1)
         y = random.randint(0, max_y - 1)
-        coroutines.append(blink(canvas, x, y, symbol))
+        offset_tics = random.randint(0, 20)
+        coroutines.append(blink(canvas, x, y, offset_tics, symbol))
     while True:
         for coroutine in coroutines.copy():
             try:
@@ -168,11 +169,11 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-async def blink(canvas, row, column, symbol='*'):
+async def blink(canvas, row, column, offset_tics, symbol='*'):
     while True:
         canvas.addstr(row, column, symbol, curses.A_DIM)
         await asyncio.sleep(0)
-        for _ in range(random.randint(0, 20)):
+        for _ in range(offset_tics):
             await asyncio.sleep(0)
 
         canvas.addstr(row, column, symbol)
