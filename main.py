@@ -96,7 +96,6 @@ async def animate_spaceship(canvas, column, row):
     for rocket in cycle(frames):
         row, column = get_direction_rocket(canvas, row, column, size_rows, size_columns, max_x, max_y)
         draw_frame(canvas, row, column, rocket)
-        canvas.refresh()
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, rocket, negative=True)
 
