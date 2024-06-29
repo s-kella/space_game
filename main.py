@@ -3,6 +3,7 @@ import random
 import time
 import curses
 import asyncio
+from itertools import cycle
 
 SPACE_KEY_CODE = 32
 LEFT_KEY_CODE = 260
@@ -91,18 +92,13 @@ async def animate_spaceship(canvas, column, row):
     rocket_2 = read_file('rocket_frame_2.txt')
     max_x, max_y = canvas.getmaxyx()
     size_rows, size_columns = get_frame_size(rocket_1)
-    while True:
+    frames = [rocket_1, rocket_2]
+    for rocket in cycle(frames):
         row, column = get_direction_rocket(canvas, row, column, size_rows, size_columns, max_x, max_y)
-        draw_frame(canvas, row, column, rocket_1)
+        draw_frame(canvas, row, column, rocket)
         canvas.refresh()
         await asyncio.sleep(0)
-        draw_frame(canvas, row, column, rocket_1, negative=True)
-
-        row, column = get_direction_rocket(canvas, row, column, size_rows, size_columns, max_x, max_y)
-        draw_frame(canvas, row, column, rocket_2)
-        canvas.refresh()
-        await asyncio.sleep(0)
-        draw_frame(canvas, row, column, rocket_2, negative=True)
+        draw_frame(canvas, row, column, rocket, negative=True)
 
 
 def draw_frame(canvas, start_row, start_column, text, negative=False):
