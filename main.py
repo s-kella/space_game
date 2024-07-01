@@ -92,7 +92,7 @@ async def animate_spaceship(canvas, column, row):
     rocket_2 = read_file('rocket_frame_2.txt')
     max_x, max_y = canvas.getmaxyx()
     size_rows, size_columns = get_frame_size(rocket_1)
-    frames = [rocket_1, rocket_2]
+    frames = [rocket_1, rocket_1, rocket_2, rocket_2]
     for rocket in cycle(frames):
         row, column = get_direction_rocket(canvas, row, column, size_rows, size_columns, max_x, max_y)
         draw_frame(canvas, row, column, rocket)
